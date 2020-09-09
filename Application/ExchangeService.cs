@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
@@ -21,9 +22,14 @@ namespace Exchange
         {
             string uri = _baseUrl + "tables/a";
             HttpResponseMessage response = _client.GetAsync(uri).Result;
-            string errorStatus = response.IsSuccessStatusCode ? null : response.StatusCode.ToString();
-            _logger.Log(uri, errorStatus);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.Log(uri, response.StatusCode.ToString());
+                throw new Exception("NBP response failure");
+            }
+
+            _logger.Log(uri, null);
             string responseString = response.Content.ReadAsStringAsync().Result;
             JToken responseObject = JToken.Parse(responseString);
 
@@ -38,9 +44,14 @@ namespace Exchange
         {
             string uri = _baseUrl + "rates/a/" + currency;
             HttpResponseMessage response = _client.GetAsync(uri).Result;
-            string errorStatus = response.IsSuccessStatusCode ? null : response.StatusCode.ToString();
-            _logger.Log(uri, errorStatus);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.Log(uri, response.StatusCode.ToString());
+                throw new Exception("NBP response failure");
+            }
+
+            _logger.Log(uri, null);
             string responseString = response.Content.ReadAsStringAsync().Result;
             JToken responseObject = JToken.Parse(responseString);
 
